@@ -6,7 +6,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 @app.route("/scrape", methods=["POST"])
-def scrape_hellowork():
+def scrape_hellowork_homepage():
     data = request.get_json()
     url = data.get("url")
     if not url:
@@ -16,39 +16,20 @@ def scrape_hellowork():
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    results = []
-    cards = soup.find_all("div", class_="card-offer__content")
+    # Exemple : récupérer les <h1>, <h2> et quelques liens visibles
+    h1 = soup.find("h1")
+    h2_list = [h2.text.strip() for h2 in soup.find_all("h2")]
+    links = [{"text": a.text.strip(), "href": a['href']} for a in soup.find_all("a", href=True)][:10]  # limiter à 10
 
-    for card in cards:
-        titre = card.find("h3")
-        entreprise = card.find("div", class_="card-offer__company")
-        lieu = card.find("div", class_="card-offer__location")
-        lien = card.find("a", href=True)
-
-        if not titre or not entreprise or not lieu or not lien:
-            continue
-
-        results.append({
-            "date": datetime.today().strftime('%Y-%m-%d'),
-            "source": "HelloWork",
-            "entreprise": entreprise.text.strip(),
-            "localisation": lieu.text.strip(),
-            "secteur": "",
-            "taille_entreprise": "",
-            "poste": titre.text.strip(),
-            "experience_demande": "",
-            "competences": [],
-            "score": 80,
-            "pitch": "",
-            "statut": "À traiter",
-            "date_candidature": "",
-            "date_reponse": "",
-            "delai_reponse": "",
-            "commentaires": "",
-            "lien": "https://www.hellowork.com" + lien['href']
-        })
-
-    return jsonify(results)
+    return jsonify({
+        "ok": True,
+        "message": "Scraping page d'accueil HelloWork terminé.",
+        "date": datetime.today().strftime('%Y-%m-%d'),
+        "url_received": url,
+        "h1": h1.text.strip() if h1 else None,
+        "h2_list": h2_list,
+        "links": links
+    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
