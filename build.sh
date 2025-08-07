@@ -1,11 +1,8 @@
 #!/bin/bash
 
-echo "▶ Installation Playwright avec Chromium manuellement..."
+echo "▶ Installation Playwright..."
 
-# Installation Playwright (Python)
-pip install playwright
+# Force l'installation du binaire Chromium dans un environnement compatible Render
+npx playwright install chromium
 
-# Installation manuelle de Chromium dans le bon chemin
-python -m playwright install chromium
-
-echo "✅ Installation Playwright + Chromium OK"
+echo "✅ Chromium installé"
