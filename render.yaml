@@ -2,10 +2,8 @@ services:
   - type: web
     name: job-scraper
     env: python
-    region: oregon
     plan: free
     buildCommand: |
-      apt-get update && apt-get install -y wget ca-certificates fonts-liberation libnss3 libxss1 libasound2 libatk-bridge2.0-0 libgtk-3-0 libgbm1 libxshmfence1 libdrm2
       chmod +x build.sh
       ./build.sh
     startCommand: python main.py

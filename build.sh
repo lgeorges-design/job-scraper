@@ -1,8 +1,9 @@
 #!/bin/bash
 
-echo "▶ Installation Playwright..."
+echo "▶ Installation des dépendances système..."
+apt-get update && apt-get install -y libnss3 libatk-bridge2.0-0 libxss1 libasound2 libxshmfence1 libgbm1 libgtk-3-0 libdrm2
 
-# Force l'installation du binaire Chromium dans un environnement compatible Render
-npx playwright install chromium
+echo "▶ Installation de Playwright..."
+playwright install chromium
 
-echo "✅ Chromium installé"
+echo "✅ Build terminé"
