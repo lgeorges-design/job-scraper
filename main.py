@@ -7,6 +7,8 @@ app = Flask(__name__)
 @app.route("/scrape", methods=["POST"])
 def scrape_page():
     data = request.get_json()
+    print("🔍 Payload reçu :", data)  # DEBUG
+
     url = data.get("url")
     timeout_ms = data.get("timeout_ms", 5000)
 
@@ -25,33 +27,37 @@ def scrape_page():
                 results = []
 
                 for card in cards:
-                    titre_el = card.query_selector("h2")
-                    entreprise_el = card.query_selector(".JobCard_card__company__EmAvV")
-                    localisation_el = card.query_selector(".JobCard_card__location__yG0sQ")
-                    lien_el = card.query_selector("a")
+                    try:
+                        titre_el = card.query_selector("h2")
+                        entreprise_el = card.query_selector(".JobCard_card__company__EmAvV")
+                        localisation_el = card.query_selector(".JobCard_card__location__yG0sQ")
+                        lien_el = card.query_selector("a")
 
-                    if not all([titre_el, entreprise_el, localisation_el, lien_el]):
+                        if not all([titre_el, entreprise_el, localisation_el, lien_el]):
+                            continue
+
+                        results.append({
+                            "date": datetime.today().strftime('%Y-%m-%d'),
+                            "source": "MakeSense",
+                            "entreprise": entreprise_el.inner_text().strip(),
+                            "localisation": localisation_el.inner_text().strip(),
+                            "secteur": "",
+                            "taille_entreprise": "",
+                            "poste": titre_el.inner_text().strip(),
+                            "experience_demande": "",
+                            "competences": [],
+                            "score": 80,
+                            "pitch": "",
+                            "statut": "À traiter",
+                            "date_candidature": "",
+                            "date_reponse": "",
+                            "delai_reponse": "",
+                            "commentaires": "",
+                            "lien": lien_el.get_attribute("href")
+                        })
+                    except Exception as e:
+                        print(f"⚠️ Erreur lors du traitement d'une card: {e}")
                         continue
-
-                    results.append({
-                        "date": datetime.today().strftime('%Y-%m-%d'),
-                        "source": "MakeSense",
-                        "entreprise": entreprise_el.inner_text().strip(),
-                        "localisation": localisation_el.inner_text().strip(),
-                        "secteur": "",
-                        "taille_entreprise": "",
-                        "poste": titre_el.inner_text().strip(),
-                        "experience_demande": "",
-                        "competences": [],
-                        "score": 80,
-                        "pitch": "",
-                        "statut": "À traiter",
-                        "date_candidature": "",
-                        "date_reponse": "",
-                        "delai_reponse": "",
-                        "commentaires": "",
-                        "lien": lien_el.get_attribute("href")
-                    })
 
                 return jsonify(results)
             finally:
