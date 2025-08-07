@@ -11,9 +11,3 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.10
-    buildFilter:
-      paths:
-        - main.py
-        - build.sh
-        - requirements.txt
-        - render.yaml
